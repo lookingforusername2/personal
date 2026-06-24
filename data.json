@@ -1,0 +1,24 @@
+{
+  "profile": {
+    "name": "Your Name",
+    "city": "Tehran",
+    "country": "Iran",
+    "bio": "A curious person who loves music, slow mornings, and building things.",
+    "about_p1": "Write something about yourself here.",
+    "about_p2": "",
+    "languages": "Persian, English",
+    "currently_reading": "",
+    "mood": "Peaceful & focused",
+    "photo": "",
+    "social": {
+      "email": "hello@example.com",
+      "github": "#",
+      "instagram": "#",
+      "telegram": "#"
+    }
+  },
+  "music": [],
+  "gallery": [],
+  "posts": [],
+  "interests": []
+}

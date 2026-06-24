@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Admin Panel</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<script src="config.js"></script>
+<style>
+:root{
+  --bg:#0f0f0f;--bg2:#161616;--bgc:#1c1c1c;--bgc2:#222;
+  --t:#e8e0d0;--t2:#8a8278;--t3:#50483f;
+  --br:rgba(232,224,208,.08);--br2:rgba(232,224,208,.04);
+  --ac:#b8a9d4;--acbg:rgba(184,169,212,.1);
+  --sage:#8aad96;--red:#c87878;--warn:#d4b84a;
+  --r:10px;--rl:16px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--t);font-size:14px}
+button{border:none;background:none;font:inherit;cursor:pointer;color:inherit}
+input,textarea,select{font:inherit;outline:none;color:var(--t)}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--t3);border-radius:99px}
+code{font-size:.8rem;background:var(--bg2);padding:1px 6px;border-radius:4px;border:1px solid var(--br)}
+
+/* ── LOGIN ── */
+#login{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:999}
+.lbox{width:340px;padding:32px;background:var(--bgc);border:1px solid var(--br);border-radius:var(--rl);display:flex;flex-direction:column;gap:14px}
+.lbox h1{font-family:Georgia,serif;font-size:1.4rem;font-weight:400;text-align:center}
+.lbox h1 em{font-style:italic;color:var(--ac)}
+.lbox p{font-size:.78rem;color:var(--t2);text-align:center;line-height:1.5}
+.finp{width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--br);border-radius:var(--r);font-size:.9rem;transition:border-color .2s,box-shadow .2s}
+.finp:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(184,169,212,.1)}
+.finp::placeholder{color:var(--t3)}
+.btn-pri{width:100%;padding:10px;border-radius:var(--r);background:var(--t);color:var(--bg);font-size:.85rem;font-weight:500;transition:opacity .2s}
+.btn-pri:hover{opacity:.85}.btn-pri:disabled{opacity:.4;pointer-events:none}
+.err-msg{font-size:.78rem;color:var(--red);text-align:center;display:none;background:rgba(200,100,100,.08);padding:8px;border-radius:var(--r)}
+.status-row{display:flex;align-items:center;gap:8px;font-size:.74rem;padding:9px 12px;border-radius:var(--r);}
+.status-row.ok{background:rgba(138,173,150,.08);color:var(--sage)}
+.status-row.bad{background:rgba(200,100,100,.08);color:var(--red)}
+.status-row.checking{background:var(--bgc2);color:var(--t3)}
+
+/* ── APP SHELL ── */
+#app{display:none;min-height:100vh;flex-direction:row}
+.side{width:210px;flex-shrink:0;background:var(--bgc);border-right:1px solid var(--br);display:flex;flex-direction:column;position:fixed;top:0;bottom:0;left:0}
+.side-logo{padding:22px 18px 18px;border-bottom:1px solid var(--br2);font-family:Georgia,serif;font-size:1rem;font-weight:400}
+.side-logo em{font-style:italic;color:var(--ac)}
+.side-logo small{display:block;font-size:.68rem;color:var(--t3);margin-top:2px}
+.side-nav{padding:10px 8px;flex:1;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.sn{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:var(--r);font-size:.8rem;color:var(--t2);cursor:pointer;transition:color .2s,background .2s}
+.sn:hover{color:var(--t);background:var(--br)}
+.sn.on{color:var(--t);background:var(--acbg)}
+.sn i{width:14px;text-align:center;font-size:.8rem}
+.side-foot{padding:14px;border-top:1px solid var(--br2);display:flex;flex-direction:column;gap:8px}
+.sf{font-size:.73rem;color:var(--t3);display:flex;align-items:center;gap:7px;cursor:pointer;transition:color .2s;text-decoration:none}
+.sf:hover{color:var(--t)}
+
+.main{margin-left:210px;padding:28px;flex:1;min-height:100vh}
+.pg{display:none}.pg.on{display:block}
+
+.tbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:12px;flex-wrap:wrap}
+.ptitle{font-family:Georgia,serif;font-size:1.5rem;font-weight:300}
+.ptitle em{font-style:italic;color:var(--ac)}
+.tacts{display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--r);font-size:.78rem;font-weight:500;transition:opacity .2s,transform .15s}
+.btn:hover{opacity:.85;transform:translateY(-1px)}
+.btn:disabled{opacity:.4;pointer-events:none}
+.btn-save{background:var(--t);color:var(--bg)}
+.btn-add{background:var(--acbg);color:var(--ac);border:1px solid rgba(184,169,212,.2)}
+.btn-ghost{background:var(--bgc2);color:var(--t2);border:1px solid var(--br)}
+
+.notice{padding:11px 15px;border-radius:var(--r);font-size:.8rem;margin-bottom:16px;display:flex;align-items:flex-start;gap:9px}
+.notice i{margin-top:2px;flex-shrink:0}
+.ni{background:var(--acbg);color:var(--ac);border:1px solid rgba(184,169,212,.2)}
+.nw{background:rgba(212,184,74,.07);color:var(--warn);border:1px solid rgba(212,184,74,.2)}
+.ns{background:rgba(138,173,150,.08);color:var(--sage);border:1px solid rgba(138,173,150,.2)}
+
+.card{background:var(--bgc);border:1px solid var(--br2);border-radius:var(--rl);padding:22px;margin-bottom:14px}
+.card-h{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin-bottom:16px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fgrid.g1{grid-template-columns:1fr}
+.fld{display:flex;flex-direction:column;gap:4px}
+.fld.s2{grid-column:span 2}
+.fld label{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--t3)}
+.fld input,.fld textarea,.fld select{background:var(--bg);border:1px solid var(--br);border-radius:var(--r);padding:9px 12px;font-size:.875rem;width:100%;transition:border-color .2s,box-shadow .2s}
+.fld input:focus,.fld textarea:focus,.fld select:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(184,169,212,.1)}
+.fld input::placeholder,.fld textarea::placeholder{color:var(--t3)}
+.fld textarea{resize:vertical;min-height:76px}
+
+.ilist{display:flex;flex-direction:column;gap:6px}
+.irow{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bgc);border:1px solid var(--br2);border-radius:var(--r);transition:border-color .2s}
+.irow:hover{border-color:var(--br)}
+.ithumb{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;overflow:hidden;background:var(--bgc2)}
+.ithumb img{width:100%;height:100%;object-fit:cover}
+.iinfo{flex:1;min-width:0}
+.iname{font-size:.875rem;font-weight:500;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.isub{font-size:.72rem;color:var(--t3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ibadge{font-size:.65rem;letter-spacing:.07em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:var(--acbg);color:var(--ac);flex-shrink:0}
+.iacts{display:flex;gap:3px;flex-shrink:0}
+.iab{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.75rem;color:var(--t3);transition:color .2s,background .2s}
+.iab:hover{color:var(--t);background:var(--br)}
+.iab.del:hover{color:var(--red);background:rgba(200,100,100,.09)}
+
+/* ── MODAL ── */
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.mbg.on{opacity:1;pointer-events:all}
+.mbox{background:var(--bgc);border:1px solid var(--br);border-radius:var(--rl);padding:24px;width:480px;max-width:92vw;max-height:86vh;overflow-y:auto;transform:translateY(14px);transition:transform .25s}
+.mbg.on .mbox{transform:none}
+.mhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.mtitle{font-family:Georgia,serif;font-size:1.1rem;font-weight:400}
+.mclose{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--t3);transition:color .2s,background .2s}
+.mclose:hover{color:var(--t);background:var(--br)}
+.mform{display:flex;flex-direction:column;gap:10px}
+.macts{display:flex;gap:8px;margin-top:12px;justify-content:flex-end}
+
+/* ── UPLOAD ZONE ── */
+.upzone{border:1.5px dashed var(--br);border-radius:var(--r);padding:18px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;position:relative}
+.upzone:hover,.upzone.drag{border-color:var(--ac);background:var(--acbg)}
+.upzone i{font-size:1.4rem;color:var(--t3);margin-bottom:6px;display:block}
+.upzone .uptxt{font-size:.8rem;color:var(--t2)}
+.upzone .uphint{font-size:.7rem;color:var(--t3);margin-top:3px}
+.upzone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.upstatus{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r);font-size:.8rem;margin-top:8px}
+.upstatus.busy{background:var(--bgc2);color:var(--t2)}
+.upstatus.done{background:rgba(138,173,150,.08);color:var(--sage)}
+.upstatus.fail{background:rgba(200,100,100,.08);color:var(--red)}
+.up-preview{display:flex;align-items:center;gap:10px;margin-top:8px}
+.up-preview img{width:48px;height:48px;border-radius:8px;object-fit:cover}
+.up-preview audio{height:32px;flex:1}
+.spin{width:13px;height:13px;border:2px solid var(--t3);border-top-color:var(--t);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.jarea{width:100%;min-height:420px;background:var(--bg);border:1px solid var(--br);border-radius:var(--r);padding:14px;font-family:'Courier New',monospace;font-size:.76rem;color:var(--t2);line-height:1.6;resize:vertical;transition:border-color .2s}
+.jarea:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(184,169,212,.1);outline:none}
+
+#toast{position:fixed;bottom:20px;right:20px;background:var(--bgc2);border:1px solid var(--br);border-radius:var(--r);padding:11px 18px;font-size:.8rem;color:var(--t);display:flex;align-items:center;gap:9px;z-index:999;opacity:0;transform:translateY(12px);transition:opacity .3s,transform .3s;pointer-events:none;max-width:360px}
+#toast.on{opacity:1;transform:none}
+#toast.err i{color:var(--red)}
+#toast.ok  i{color:var(--sage)}
+
+@media(max-width:680px){
+  .side{width:100%;height:auto;position:relative;flex-direction:row;border-right:none;border-bottom:1px solid var(--br)}
+  .side-logo,.side-foot{display:none}
+  .side-nav{flex-direction:row;flex-wrap:wrap;padding:8px;gap:4px}
+  .sn{padding:7px 10px}
+  .main{margin-left:0;padding:16px}
+  .fgrid{grid-template-columns:1fr}
+  .fld.s2{grid-column:span 1}
+  #app{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="lbox">
+    <h1>Admin <em>Panel</em></h1>
+    <p>Personal site management</p>
+    <div class="status-row checking" id="health-row"><i class="fa-solid fa-circle-notch fa-spin"></i> در حال بررسی تنظیمات…</div>
+    <input class="finp" type="password" id="pw" placeholder="GitHub Personal Access Token" autocomplete="current-password"/>
+    <button class="btn-pri" id="pw-btn">ورود</button>
+    <div class="err-msg" id="pw-err"></div>
+    <p style="font-size:.72rem;line-height:1.6">توکن GitHub را از<br>
+    <code>Settings → Developer settings → Personal access tokens → Fine-grained</code><br>
+    با دسترسی <code>Contents: Read & Write</code> بسازید.</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="side">
+    <div class="side-logo">Admin <em>Panel</em><small>Personal Site</small></div>
+    <nav class="side-nav">
+      <div class="sn on" data-p="profile"><i class="fa-solid fa-user"></i> Profile</div>
+      <div class="sn" data-p="music"><i class="fa-solid fa-music"></i> Music</div>
+      <div class="sn" data-p="gallery"><i class="fa-solid fa-images"></i> Gallery</div>
+      <div class="sn" data-p="posts"><i class="fa-solid fa-pen-nib"></i> Posts</div>
+      <div class="sn" data-p="interests"><i class="fa-solid fa-heart"></i> Interests</div>
+      <div class="sn" data-p="json"><i class="fa-solid fa-code"></i> Raw JSON</div>
+    </nav>
+    <div class="side-foot">
+      <a href="index.html" class="sf" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> View Site</a>
+      <div class="sf" id="logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</div>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- PROFILE -->
+    <div class="pg on" id="pg-profile">
+      <div class="tbar">
+        <div class="ptitle">Profile <em>Settings</em></div>
+        <div class="tacts"><button class="btn btn-save" id="save-profile"><i class="fa-solid fa-cloud-arrow-up"></i> Save to Site</button></div>
+      </div>
+      <div class="notice ni"><i class="fa-solid fa-circle-info"></i> تغییرات مستقیماً روی GitHub ذخیره می‌شن — Cloudflare Pages بعد از چند ثانیه سایت رو به‌روزرسانی می‌کنه.</div>
+      <div class="card">
+        <div class="card-h">Personal Info</div>
+        <div class="fgrid">
+          <div class="fld"><label>Full Name</label><input id="p-name" placeholder="Your Name"/></div>
+          <div class="fld"><label>City</label><input id="p-city" placeholder="Tehran"/></div>
+          <div class="fld"><label>Country</label><input id="p-country" placeholder="Iran"/></div>
+          <div class="fld"><label>Languages</label><input id="p-lang" placeholder="Persian, English"/></div>
+          <div class="fld"><label>Currently Reading</label><input id="p-reading" placeholder="Book title"/></div>
+          <div class="fld"><label>Mood</label><input id="p-mood" placeholder="Peaceful & focused"/></div>
+          <div class="fld s2"><label>Short Bio (hero section)</label><input id="p-bio" placeholder="One line about you"/></div>
+          <div class="fld s2"><label>About — Paragraph 1</label><textarea id="p-p1"></textarea></div>
+          <div class="fld s2"><label>About — Paragraph 2</label><textarea id="p-p2"></textarea></div>
+          <div class="fld s2">
+            <label>Profile Photo</label>
+            <div class="upzone" id="up-profile-zone">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <div class="uptxt">Click or drop an image</div>
+              <div class="uphint">JPG, PNG, WebP — up to ~18MB</div>
+              <input type="file" id="up-profile-input" accept="image/*"/>
+            </div>
+            <div id="up-profile-status"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h">Social Links</div>
+        <div class="fgrid">
+          <div class="fld"><label>Email</label><input id="s-email" type="email" placeholder="hello@example.com"/></div>
+          <div class="fld"><label>GitHub URL</label><input id="s-github" placeholder="https://github.com/you"/></div>
+          <div class="fld"><label>Instagram URL</label><input id="s-insta" placeholder="https://instagram.com/you"/></div>
+          <div class="fld"><label>Telegram URL</label><input id="s-tg" placeholder="https://t.me/you"/></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MUSIC -->
+    <div class="pg" id="pg-music">
+      <div class="tbar">
+        <div class="ptitle">Music <em>Tracks</em></div>
+        <div class="tacts"><button class="btn btn-add" id="add-track"><i class="fa-solid fa-plus"></i> Add Track</button></div>
+      </div>
+      <div class="notice ni"><i class="fa-solid fa-circle-info"></i> فایل‌های MP3 مستقیماً روی GitHub repo شما آپلود می‌شن و از همانجا پخش می‌شن.</div>
+      <div class="ilist" id="music-list"></div>
+    </div>
+
+    <!-- GALLERY -->
+    <div class="pg" id="pg-gallery">
+      <div class="tbar">
+        <div class="ptitle">Gallery <em>Photos</em></div>
+        <div class="tacts"><button class="btn btn-add" id="add-photo"><i class="fa-solid fa-plus"></i> Add Photo</button></div>
+      </div>
+      <div class="ilist" id="gallery-list"></div>
+    </div>
+
+    <!-- POSTS -->
+    <div class="pg" id="pg-posts">
+      <div class="tbar">
+        <div class="ptitle">Blog <em>Posts</em></div>
+        <div class="tacts"><button class="btn btn-add" id="add-post"><i class="fa-solid fa-plus"></i> Add Post</button></div>
+      </div>
+      <div class="ilist" id="posts-list"></div>
+    </div>
+
+    <!-- INTERESTS -->
+    <div class="pg" id="pg-interests">
+      <div class="tbar">
+        <div class="ptitle">Interests <em>&amp; Hobbies</em></div>
+        <div class="tacts"><button class="btn btn-add" id="add-interest"><i class="fa-solid fa-plus"></i> Add</button></div>
+      </div>
+      <div class="ilist" id="interests-list"></div>
+    </div>
+
+    <!-- JSON -->
+    <div class="pg" id="pg-json">
+      <div class="tbar">
+        <div class="ptitle">Raw <em>JSON</em></div>
+        <div class="tacts">
+          <button class="btn btn-ghost" id="fmt-json"><i class="fa-solid fa-wand-magic-sparkles"></i> Format</button>
+          <button class="btn btn-ghost" id="dl-json"><i class="fa-solid fa-download"></i> Backup Copy</button>
+          <button class="btn btn-save" id="save-json"><i class="fa-solid fa-cloud-arrow-up"></i> Save to Site</button>
+        </div>
+      </div>
+      <div class="notice nw"><i class="fa-solid fa-triangle-exclamation"></i> Edit carefully — invalid JSON will break the site.</div>
+      <textarea class="jarea" id="jarea" spellcheck="false"></textarea>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="mbg" id="modal">
+  <div class="mbox">
+    <div class="mhdr">
+      <div class="mtitle" id="mtitle">Edit</div>
+      <button class="mclose" id="mclose"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="mform" id="mform"></div>
+    <div class="macts">
+      <button class="btn" style="background:rgba(200,100,100,.09);color:var(--red);border:1px solid rgba(200,100,100,.18)" id="mdel">
+        <i class="fa-solid fa-trash"></i> Delete
+      </button>
+      <button class="btn btn-save" id="msave"><i class="fa-solid fa-check"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"><i class="fa-solid fa-check"></i><span id="tmsg">Done</span></div>
+
+<script>
+// ════════════════════════════════════════════
+//  Admin Panel — GitHub Backend
+//  همه تغییرات مستقیم روی GitHub repo ذخیره می‌شن
+// ════════════════════════════════════════════
+
+const CFG    = window.SITE_CONFIG || {};
+const OWNER  = CFG.GITHUB_OWNER  || '';
+const REPO   = CFG.GITHUB_REPO   || '';
+const BRANCH = CFG.GITHUB_BRANCH || 'main';
+const RAW    = (CFG.GITHUB_RAW || '').replace(/\/$/, '');
+
+let TOKEN = sessionStorage.getItem('gh-token') || '';
+let DATA  = null;
+let mType = '', mIdx = -1;
+let pendingUpload = { music: null, gallery: null, profile: null };
+
+// ── بررسی config ──
+checkConfig();
+function checkConfig() {
+  const row = document.getElementById('health-row');
+  if (!OWNER || OWNER === 'YOUR_USERNAME' || !REPO || REPO === 'YOUR_REPO') {
+    row.className = 'status-row bad';
+    row.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> config.js هنوز تنظیم نشده — GITHUB_OWNER و GITHUB_REPO را وارد کنید';
+    return;
+  }
+  row.className = 'status-row ok';
+  row.innerHTML = `<i class="fa-solid fa-circle-check"></i> Repo: ${OWNER}/${REPO} (${BRANCH})`;
+  if (TOKEN) tryRestoreSession();
+}
+
+// ── GitHub API helper ──
+function ghHeaders(extra = {}) {
+  return {
+    Authorization: 'token ' + TOKEN,
+    Accept: 'application/vnd.github.v3+json',
+    'Content-Type': 'application/json',
+    ...extra
+  };
+}
+function ghApiUrl(path) {
+  return `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path.replace(/^\//, '')}`;
+}
+
+// ── AUTH ──
+document.getElementById('pw-btn').onclick = tryLogin;
+document.getElementById('pw').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+
+async function tryRestoreSession() {
+  const ok = await verifyToken(TOKEN);
+  if (ok) boot(); else { TOKEN = ''; sessionStorage.removeItem('gh-token'); }
+}
+
+async function verifyToken(token) {
+  try {
+    const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}`, {
+      headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github.v3+json' }
+    });
+    return r.ok;
+  } catch { return false; }
+}
+
+async function tryLogin() {
+  const btn = document.getElementById('pw-btn');
+  const errEl = document.getElementById('pw-err');
+  errEl.style.display = 'none';
+  const val = document.getElementById('pw').value.trim();
+  if (!val) return;
+  btn.disabled = true; btn.textContent = 'در حال بررسی…';
+  try {
+    const ok = await verifyToken(val);
+    if (ok) {
+      TOKEN = val;
+      sessionStorage.setItem('gh-token', val);
+      boot();
+    } else {
+      errEl.style.display = 'block';
+      errEl.textContent = 'توکن اشتباه است یا دسترسی به این repo ندارد.';
+      document.getElementById('pw').value = '';
+    }
+  } catch(e) {
+    errEl.style.display = 'block';
+    errEl.textContent = 'خطا در اتصال به GitHub: ' + e.message;
+  } finally {
+    btn.disabled = false; btn.textContent = 'ورود';
+  }
+}
+
+function boot() {
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  fetchData();
+}
+
+document.getElementById('logout').onclick = () => {
+  sessionStorage.removeItem('gh-token'); location.reload();
+};
+
+// ── FETCH / SAVE DATA ──
+async function fetchData() {
+  try {
+    const r = await fetch(RAW + '/data.json?t=' + Date.now());
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    DATA = await r.json();
+  } catch (e) {
+    showToast('خطا در خواندن data.json: ' + e.message, true);
+    DATA = defaultData();
+  }
+  renderAll();
+}
+
+// گرفتن SHA فایل (برای update)
+async function getFileSha(path) {
+  try {
+    const r = await fetch(ghApiUrl(path), { headers: ghHeaders() });
+    if (!r.ok) return null;
+    const d = await r.json();
+    return d.sha || null;
+  } catch { return null; }
+}
+
+// ذخیره یک فایل روی GitHub
+async function ghPutFile(path, contentBase64, message, sha = null) {
+  const body = { message, content: contentBase64, branch: BRANCH };
+  if (sha) body.sha = sha;
+  const r = await fetch(ghApiUrl(path), {
+    method: 'PUT',
+    headers: ghHeaders(),
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({}));
+    throw new Error(err.message || 'HTTP ' + r.status);
+  }
+  return await r.json();
+}
+
+async function saveToServer() {
+  try {
+    const json = JSON.stringify(DATA, null, 2);
+    const b64  = btoa(unescape(encodeURIComponent(json)));
+    const sha  = await getFileSha('data.json');
+    await ghPutFile('data.json', b64, '⚙️ update data.json via admin panel', sha);
+    showToast('✓ ذخیره شد! سایت شما بعد از چند ثانیه به‌روز می‌شه.');
+    return true;
+  } catch (e) {
+    showToast('خطا در ذخیره: ' + e.message, true);
+    return false;
+  }
+}
+
+function defaultData() {
+  return {
+    profile: { name:'Your Name', city:'Tehran', country:'Iran', bio:'', about_p1:'', about_p2:'',
+               currently_reading:'', mood:'', languages:'Persian, English', photo:'',
+               social:{ email:'hello@example.com', github:'#', instagram:'#', telegram:'#' }},
+    music:[], gallery:[], posts:[], interests:[]
+  };
+}
+
+function renderAll() {
+  fillProfile();
+  renderList('music');
+  renderList('gallery');
+  renderList('posts');
+  renderList('interests');
+  syncJson();
+}
+
+// ── NAV ──
+document.querySelectorAll('.sn').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.sn').forEach(b => b.classList.remove('on'));
+    document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
+    btn.classList.add('on');
+    document.getElementById('pg-' + btn.dataset.p).classList.add('on');
+    if (btn.dataset.p === 'json') syncJson();
+  };
+});
+
+// ── TOAST ──
+let toastTimer;
+function showToast(msg, err=false) {
+  const t = document.getElementById('toast');
+  document.getElementById('tmsg').textContent = msg;
+  t.querySelector('i').className = err ? 'fa-solid fa-triangle-exclamation' : 'fa-solid fa-check';
+  t.className = err ? 'on err' : 'on ok';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.className = '', 4500);
+}
+
+// ── FILE UPLOAD به GitHub ──
+async function doUpload(file, folder, statusElId, onDone) {
+  const statusEl = document.getElementById(statusElId);
+
+  // بررسی سایز (فایل‌های بزرگ‌تر از 50MB برای GitHub مناسب نیستن)
+  if (file.size > 50 * 1024 * 1024) {
+    statusEl.innerHTML = `<div class="upstatus fail"><i class="fa-solid fa-xmark"></i> فایل بزرگ‌تر از 50MB است. GitHub این محدودیت را دارد.</div>`;
+    onDone(null); return;
+  }
+
+  statusEl.innerHTML = `<div class="upstatus busy"><div class="spin"></div> در حال آپلود ${esc(file.name)} روی GitHub…</div>`;
+
+  try {
+    // تبدیل فایل به base64
+    const b64 = await fileToBase64(file);
+    const path = `assets/${folder}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+
+    // آپلود روی GitHub
+    await ghPutFile(path, b64, `📁 upload ${file.name} via admin panel`);
+
+    const sizeKB = (file.size / 1024).toFixed(0);
+    statusEl.innerHTML = `<div class="upstatus done"><i class="fa-solid fa-check"></i> آپلود شد (${sizeKB} KB) — ${path}</div>`;
+    onDone(path);
+  } catch(e) {
+    statusEl.innerHTML = `<div class="upstatus fail"><i class="fa-solid fa-xmark"></i> ${esc(e.message)}</div>`;
+    onDone(null);
+  }
+}
+
+function fileToBase64(file) {
+  return new Promise((res, rej) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      // حذف data URL prefix
+      const b64 = reader.result.split(',')[1];
+      res(b64);
+    };
+    reader.onerror = () => rej(new Error('خواندن فایل ناموفق بود'));
+    reader.readAsDataURL(file);
+  });
+}
+
+// آدرس فایل برای نمایش پیش‌نمایش
+function filePreviewUrl(path) {
+  if (!path) return '';
+  if (path.startsWith('http')) return path;
+  return RAW + '/' + path + '?t=' + Date.now();
+}
+
+function setupUploadZone(zoneId, inputId, statusId, folder, onDone) {
+  const zone  = document.getElementById(zoneId);
+  const input = document.getElementById(inputId);
+  if (!zone || !input) return;
+  zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('drag'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('drag');
+    if (e.dataTransfer.files[0]) doUpload(e.dataTransfer.files[0], folder, statusId, onDone);
+  });
+  input.addEventListener('change', () => {
+    if (input.files[0]) doUpload(input.files[0], folder, statusId, onDone);
+  });
+}
+
+/* Profile photo uploader */
+setupUploadZone('up-profile-zone', 'up-profile-input', 'up-profile-status', 'images', key => {
+  if (key) { pendingUpload.profile = key; const el = document.getElementById('p-photo-hidden-key'); if(el) el.value = key; }
+});
+
+// ── PROFILE ──
+function fillProfile() {
+  const p = DATA.profile, s = p.social || {};
+  const set = (id, val) => { const el = document.getElementById(id); if(el) el.value = val||''; };
+  set('p-name', p.name); set('p-city', p.city); set('p-country', p.country);
+  set('p-lang', p.languages); set('p-reading', p.currently_reading);
+  set('p-mood', p.mood); set('p-bio', p.bio);
+  set('p-p1', p.about_p1); set('p-p2', p.about_p2);
+  set('s-email', s.email); set('s-github', s.github);
+  set('s-insta', s.instagram); set('s-tg', s.telegram);
+
+  const statusEl = document.getElementById('up-profile-status');
+  if (p.photo) {
+    statusEl.innerHTML = `<div class="up-preview"><img src="${filePreviewUrl(p.photo)}" onerror="this.style.display='none'"/><span style="font-size:.78rem;color:var(--t2)">عکس فعلی تنظیم شده</span></div>`;
+  }
+  if (!document.getElementById('p-photo-hidden-key')) {
+    const hk = document.createElement('input');
+    hk.type = 'hidden'; hk.id = 'p-photo-hidden-key'; hk.value = p.photo || '';
+    document.getElementById('up-profile-zone').after(hk);
+  } else {
+    document.getElementById('p-photo-hidden-key').value = p.photo || '';
+  }
+}
+
+document.getElementById('save-profile').onclick = async () => {
+  const g = id => (document.getElementById(id)||{}).value||'';
+  DATA.profile = {
+    name: g('p-name'), city: g('p-city'), country: g('p-country'),
+    languages: g('p-lang'), currently_reading: g('p-reading'),
+    mood: g('p-mood'), bio: g('p-bio'),
+    about_p1: g('p-p1'), about_p2: g('p-p2'),
+    photo: pendingUpload.profile || g('p-photo-hidden-key'),
+    social: { email:g('s-email'), github:g('s-github'), instagram:g('s-insta'), telegram:g('s-tg') }
+  };
+  await saveToServer();
+};
+
+// ── RENDER LISTS ──
+function renderList(section) {
+  const el = document.getElementById(section + '-list');
+  if (!el) return;
+  const items = DATA[section] || [];
+  if (!items.length) {
+    el.innerHTML = '<div class="notice ni" style="margin:0"><i class="fa-solid fa-circle-info"></i> موردی نیست. روی "افزودن" کلیک کنید.</div>';
+    return;
+  }
+  el.innerHTML = items.map((item, i) => rowHTML(section, item, i)).join('');
+}
+
+function rowHTML(section, item, i) {
+  let thumb = '', name = '', sub = '', badge = '';
+  if (section === 'music') {
+    thumb = `<div class="ithumb" style="background:${item.cover_bg||'#222'}">${item.cover_emoji||'🎵'}</div>`;
+    name = item.title || '—'; sub = `${item.artist||''} · ${item.file ? '✓ فایل آپلود شده' : 'فایل ندارد'}`;
+    badge = `<span class="ibadge">${item.genre||''}</span>`;
+  } else if (section === 'gallery') {
+    thumb = `<div class="ithumb" style="background:${item.bg||'#222'}">${item.file ? `<img src="${filePreviewUrl(item.file)}" onerror="this.style.display='none'"/>` : ''}${item.emoji||'📷'}</div>`;
+    name = item.caption || '—'; sub = item.file ? '✓ تصویر آپلود شده' : 'تصویر ندارد';
+  } else if (section === 'posts') {
+    thumb = `<div class="ithumb" style="background:var(--bgc2);font-size:.9rem;color:var(--t3)"><i class="fa-solid fa-pen-nib"></i></div>`;
+    name = item.title || '—'; sub = `${item.date||''} · ${(item.excerpt||'').slice(0,50)}`;
+  } else if (section === 'interests') {
+    thumb = `<div class="ithumb" style="background:var(--bgc2)">${item.icon||'✨'}</div>`;
+    name = item.title || '—'; sub = (item.desc||'').slice(0,60)+'…';
+  }
+  return `
+    <div class="irow">
+      ${thumb}
+      <div class="iinfo"><div class="iname">${esc(name)}</div><div class="isub">${esc(sub)}</div></div>
+      ${badge}
+      <div class="iacts">
+        <button class="iab" onclick="openModal('${section}',${i})"><i class="fa-solid fa-pen"></i></button>
+        <button class="iab del" onclick="delItem('${section}',${i})"><i class="fa-solid fa-trash"></i></button>
+      </div>
+    </div>`;
+}
+
+document.getElementById('add-track').onclick    = () => openModal('music', -1);
+document.getElementById('add-photo').onclick    = () => openModal('gallery', -1);
+document.getElementById('add-post').onclick     = () => openModal('posts', -1);
+document.getElementById('add-interest').onclick = () => openModal('interests', -1);
+
+window.delItem = async (section, i) => {
+  if (!confirm('حذف شود؟ این تغییر فوری روی سایت اعمال می‌شه.')) return;
+  DATA[section].splice(i, 1);
+  renderList(section);
+  await saveToServer();
+};
+
+// ── MODAL ──
+const modal = document.getElementById('modal');
+document.getElementById('mclose').onclick = closeModal;
+modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+function closeModal() { modal.classList.remove('on'); }
+
+window.openModal = function(section, idx) {
+  mType = section; mIdx = idx;
+  const isNew = idx === -1;
+  const item = isNew ? null : DATA[section][idx];
+  pendingUpload[section] = item?.file || null;
+  document.getElementById('mtitle').textContent = (isNew ? 'افزودن ' : 'ویرایش ') + {music:'آهنگ', gallery:'عکس', posts:'پست', interests:'علاقه‌مندی'}[section];
+  document.getElementById('mdel').style.display = isNew ? 'inline-flex' : 'inline-flex';
+  document.getElementById('mdel').style.visibility = isNew ? 'hidden' : 'visible';
+  document.getElementById('mform').innerHTML = buildForm(section, item);
+  modal.classList.add('on');
+
+  if (section === 'music') {
+    setupUploadZone('mf-upzone', 'mf-upinput', 'mf-upstatus', 'music', key => { pendingUpload.music = key; });
+    if (item?.file) document.getElementById('mf-upstatus').innerHTML = `<div class="up-preview"><i class="fa-solid fa-music" style="color:var(--ac)"></i><audio controls src="${filePreviewUrl(item.file)}"></audio></div>`;
+  }
+  if (section === 'gallery') {
+    setupUploadZone('mf-upzone', 'mf-upinput', 'mf-upstatus', 'images', key => { pendingUpload.gallery = key; });
+    if (item?.file) document.getElementById('mf-upstatus').innerHTML = `<div class="up-preview"><img src="${filePreviewUrl(item.file)}"/></div>`;
+  }
+};
+
+function buildForm(section, item) {
+  const v = (k, d='') => item ? (item[k] ?? d) : d;
+  const inp = (id, lbl, val, ph='') => `<div class="fld"><label>${lbl}</label><input id="mf-${id}" value="${esc(val)}" placeholder="${ph}"/></div>`;
+  const ta  = (id, lbl, val, ph='') => `<div class="fld"><label>${lbl}</label><textarea id="mf-${id}" placeholder="${ph}">${esc(val)}</textarea></div>`;
+  const uploadBlock = (label, accept, hint) => `
+    <div class="fld">
+      <label>${label}</label>
+      <div class="upzone" id="mf-upzone">
+        <i class="fa-solid fa-cloud-arrow-up"></i>
+        <div class="uptxt">کلیک کنید یا فایل را بکشید</div>
+        <div class="uphint">${hint}</div>
+        <input type="file" id="mf-upinput" accept="${accept}"/>
+      </div>
+      <div id="mf-upstatus"></div>
+    </div>`;
+
+  if (section === 'music') return `
+    ${inp('title',  'عنوان آهنگ', v('title'),  'نام آهنگ')}
+    ${inp('artist', 'خواننده',    v('artist'), 'نام خواننده')}
+    ${inp('genre',  'ژانر',       v('genre'),  'Indie Folk')}
+    ${uploadBlock('فایل MP3', 'audio/*', 'MP3، WAV، OGG — حداکثر 50MB (GitHub limit)')}
+    ${inp('emoji',  'ایموجی کاور',   v('cover_emoji','🎵'), '🎵')}
+    ${inp('bg',     'پس‌زمینه کاور', v('cover_bg', 'linear-gradient(135deg,#1a1520,#2a1f35)'), 'CSS gradient')}`;
+
+  if (section === 'gallery') return `
+    ${uploadBlock('تصویر', 'image/*', 'JPG، PNG، WebP — حداکثر 50MB')}
+    ${inp('caption', 'توضیح', v('caption'), 'توضیح کوتاه')}
+    ${inp('emoji',   'ایموجی پیش‌فرض', v('emoji','📷'), '📷')}
+    ${inp('bg',      'پس‌زمینه', v('bg','linear-gradient(135deg,#161616,#1f1f1f)'), 'CSS gradient')}`;
+
+  if (section === 'posts') return `
+    ${inp('title',   'عنوان',   v('title'),   'عنوان پست')}
+    ${inp('date',    'تاریخ',   v('date'),    'خرداد ۱۴۰۴')}
+    ${ta('excerpt', 'خلاصه',   v('excerpt'), 'یک پیش‌نمایش کوتاه…')}
+    ${inp('url',     'لینک',    v('url','#'), 'https://… یا #')}`;
+
+  if (section === 'interests') return `
+    ${inp('icon',  'آیکون (ایموجی)', v('icon','✨'), '🎵')}
+    ${inp('title', 'عنوان',          v('title'),    'موسیقی')}
+    ${ta('desc',  'توضیح',           v('desc'),     'یک پاراگراف کوتاه…')}`;
+
+  return '';
+}
+
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+document.getElementById('msave').onclick = async () => {
+  const g = id => (document.getElementById('mf-' + id)||{}).value || '';
+  let item;
+  const uid = () => Date.now().toString();
+
+  if (mType === 'music')     item = { id:uid(), title:g('title'), artist:g('artist'), genre:g('genre'), file: pendingUpload.music || '', cover_emoji:g('emoji')||'🎵', cover_bg:g('bg')||'linear-gradient(135deg,#1a1520,#2a1f35)' };
+  if (mType === 'gallery')   item = { id:uid(), file: pendingUpload.gallery || '', caption:g('caption'), emoji:g('emoji')||'📷', bg:g('bg')||'linear-gradient(135deg,#161616,#222)' };
+  if (mType === 'posts')     item = { id:uid(), title:g('title'), date:g('date'), excerpt:g('excerpt'), url:g('url')||'#' };
+  if (mType === 'interests') item = { icon:g('icon')||'✨', title:g('title'), desc:g('desc') };
+
+  if (mIdx === -1) DATA[mType].push(item);
+  else { item.id = DATA[mType][mIdx]?.id || item.id; DATA[mType][mIdx] = item; }
+
+  closeModal();
+  renderList(mType);
+  await saveToServer();
+};
+
+document.getElementById('mdel').onclick = async () => {
+  if (mIdx === -1) { closeModal(); return; }
+  if (!confirm('حذف شود؟')) return;
+  DATA[mType].splice(mIdx, 1);
+  closeModal();
+  renderList(mType);
+  await saveToServer();
+};
+
+// ── JSON EDITOR ──
+function syncJson() { document.getElementById('jarea').value = JSON.stringify(DATA, null, 2); }
+document.getElementById('fmt-json').onclick = () => {
+  try {
+    const parsed = JSON.parse(document.getElementById('jarea').value);
+    document.getElementById('jarea').value = JSON.stringify(parsed, null, 2);
+    showToast('فرمت‌بندی انجام شد.');
+  } catch(e) { showToast('JSON نامعتبر: ' + e.message, true); }
+};
+document.getElementById('dl-json').onclick = () => {
+  const blob = new Blob([document.getElementById('jarea').value], { type:'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'data-backup.json'; a.click();
+  URL.revokeObjectURL(a.href);
+};
+document.getElementById('save-json').onclick = async () => {
+  try {
+    DATA = JSON.parse(document.getElementById('jarea').value);
+    renderAll();
+    await saveToServer();
+  } catch(e) { showToast('JSON نامعتبر: ' + e.message, true); }
+};
+</script>
+</body>
+</html>
