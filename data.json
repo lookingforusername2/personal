@@ -1,14 +1,14 @@
 {
   "profile": {
     "name": "Your Name",
-    "city": "Tehran",
+    "city": "Earth",
     "country": "Iran",
+    "languages": "Persian, English",
+    "currently_reading": "",
+    "mood": "",
     "bio": "",
     "about_p1": "",
     "about_p2": "",
-    "currently_reading": "",
-    "mood": "",
-    "languages": "Persian, English",
     "photo": "",
     "social": {
       "email": "hello@example.com",
@@ -18,15 +18,7 @@
     }
   },
   "music": [],
-  "gallery": [
-    {
-      "id": "1782336919788",
-      "file": "assets/images/1782336906909_32281.jpg",
-      "caption": "",
-      "emoji": "📷",
-      "bg": "linear-gradient(135deg,#161616,#1f1f1f)"
-    }
-  ],
+  "gallery": [],
   "posts": [],
   "interests": []
 }
