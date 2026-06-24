@@ -17,7 +17,17 @@
       "telegram": "#"
     }
   },
-  "music": [],
+  "music": [
+    {
+      "id": "1782337951267",
+      "title": "Infra 5",
+      "artist": "Max Richter",
+      "genre": "Classic",
+      "file": "",
+      "cover_emoji": "🎵",
+      "cover_bg": "linear-gradient(135deg,#1a1520,#2a1f35)"
+    }
+  ],
   "gallery": [
     {
       "id": "1782337896717",
