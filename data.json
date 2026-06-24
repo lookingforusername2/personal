@@ -18,15 +18,7 @@
     }
   },
   "music": [],
-  "gallery": [
-    {
-      "id": "1782337595058",
-      "file": "assets/images/1782337587123_33967.jpg",
-      "caption": "Yyyyyy",
-      "emoji": "📷",
-      "bg": "linear-gradient(135deg,#161616,#1f1f1f)"
-    }
-  ],
+  "gallery": [],
   "posts": [],
   "interests": []
 }
