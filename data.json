@@ -3,12 +3,12 @@
     "name": "Your Name",
     "city": "Tehran",
     "country": "Iran",
-    "bio": "A curious person who loves music, slow mornings, and building things.",
-    "about_p1": "Write something about yourself here.",
+    "bio": "",
+    "about_p1": "",
     "about_p2": "",
-    "languages": "Persian, English",
     "currently_reading": "",
-    "mood": "Peaceful & focused",
+    "mood": "",
+    "languages": "Persian, English",
     "photo": "",
     "social": {
       "email": "hello@example.com",
@@ -18,7 +18,15 @@
     }
   },
   "music": [],
-  "gallery": [],
+  "gallery": [
+    {
+      "id": "1782336919788",
+      "file": "assets/images/1782336906909_32281.jpg",
+      "caption": "",
+      "emoji": "📷",
+      "bg": "linear-gradient(135deg,#161616,#1f1f1f)"
+    }
+  ],
   "posts": [],
   "interests": []
 }
