@@ -6,7 +6,7 @@
 window.SITE_CONFIG = {
   // آدرس GitHub repo شما (بدون / آخر)
   // مثال: "https://raw.githubusercontent.com/username/my-site/main"
-  GITHUB_RAW: "https://github.com/lookingforusername2/personal/main",
+  GITHUB_RAW: "https://raw.githubusercontent.com/lookingforusername2/personal/main",
 
   // نام کاربری و نام ریپو
   GITHUB_OWNER: "lookingforusername2",
