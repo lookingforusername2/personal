@@ -18,7 +18,15 @@
     }
   },
   "music": [],
-  "gallery": [],
+  "gallery": [
+    {
+      "id": "1782337896717",
+      "file": "assets/images/1782337854228_30817.jpg",
+      "caption": "Yalta",
+      "emoji": "📷",
+      "bg": "linear-gradient(135deg,#161616,#1f1f1f)"
+    }
+  ],
   "posts": [],
   "interests": []
 }
