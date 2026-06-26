@@ -1,42 +1,110 @@
 {
   "profile": {
-    "name": "Your Name",
-    "city": "Earth",
+    "name": "LookingForUsername2",
+    "city": "Tehran",
     "country": "Iran",
-    "languages": "Persian, English",
-    "currently_reading": "",
-    "mood": "",
-    "bio": "",
-    "about_p1": "",
-    "about_p2": "",
-    "photo": "",
+    "languages": "Persian, English, Turkish",
+    "currently_reading": "The Alchemist",
+    "mood": "Creative & Focused",
+    "bio": "Developer • Music Lover • Dreamer",
+    "about_p1": "Hello! I'm a passionate developer who loves creating beautiful and functional digital experiences. My journey in the world of technology is driven by curiosity and a desire to build things that make a difference.",
+    "about_p2": "When I'm not coding, you can find me exploring new music, reading thought-provoking books, or capturing moments through my lens. I believe in the power of technology to connect people and create meaningful experiences.",
+    "photo": "assets/images/1782337854228_30817.jpg",
     "social": {
-      "email": "hello@example.com",
-      "github": "#",
-      "instagram": "#",
-      "telegram": "#"
+      "email": "contact@lookingforusername2.dev",
+      "github": "https://github.com/lookingforusername2",
+      "instagram": "https://instagram.com/lookingforusername2",
+      "telegram": "https://t.me/lookingforusername2"
     }
   },
   "music": [
     {
-      "id": "1782337951267",
-      "title": "Infra 5",
-      "artist": "Max Richter",
-      "genre": "Classic",
+      "id": "1",
+      "title": "Experience",
+      "artist": "Ludovico Einaudi",
+      "genre": "Classical",
       "file": "",
-      "cover_emoji": "🎵",
+      "cover_emoji": "🎹",
       "cover_bg": "linear-gradient(135deg,#1a1520,#2a1f35)"
+    },
+    {
+      "id": "2",
+      "title": "River Flows In You",
+      "artist": "Yiruma",
+      "genre": "Piano",
+      "file": "",
+      "cover_emoji": "🎶",
+      "cover_bg": "linear-gradient(135deg,#2a2035,#1a1520)"
+    },
+    {
+      "id": "3",
+      "title": "Comptine d'un autre été",
+      "artist": "Yann Tiersen",
+      "genre": "Soundtrack",
+      "file": "",
+      "cover_emoji": "🎻",
+      "cover_bg": "linear-gradient(135deg,#15202a,#203540)"
     }
   ],
   "gallery": [
     {
-      "id": "1782337896717",
+      "id": "1",
       "file": "assets/images/1782337854228_30817.jpg",
-      "caption": "Yalta",
-      "emoji": "📷",
+      "caption": "Sunset at Yalta",
+      "emoji": "🌅",
       "bg": "linear-gradient(135deg,#161616,#1f1f1f)"
+    },
+    {
+      "id": "2",
+      "file": "assets/images/1782337587123_33967.jpg",
+      "caption": "Mountain View",
+      "emoji": "⛰️",
+      "bg": "linear-gradient(135deg,#1f1f1f,#161616)"
+    },
+    {
+      "id": "3",
+      "file": "assets/images/1782336906909_32281.jpg",
+      "caption": "Urban Life",
+      "emoji": "🏙️",
+      "bg": "linear-gradient(135deg,#222,#1a1a1a)"
     }
   ],
-  "posts": [],
-  "interests": []
+  "posts": [
+    {
+      "id": "1",
+      "title": "My Journey into Web Development",
+      "date": "June 2025",
+      "excerpt": "How I discovered my passion for building digital experiences...",
+      "url": "#"
+    },
+    {
+      "id": "2",
+      "title": "The Power of Minimalism in Design",
+      "date": "May 2025",
+      "excerpt": "Why less is often more when it comes to creating impactful designs...",
+      "url": "#"
+    }
+  ],
+  "interests": [
+    {
+      "icon": "💻",
+      "title": "Coding",
+      "desc": "Building beautiful and functional applications that solve real problems."
+    },
+    {
+      "icon": "🎵",
+      "title": "Music",
+      "desc": "From classical piano to modern electronic, music is my constant companion."
+    },
+    {
+      "icon": "📚",
+      "title": "Reading",
+      "desc": "Exploring new worlds and ideas through books of all genres."
+    },
+    {
+      "icon": "📸",
+      "title": "Photography",
+      "desc": "Capturing moments and perspectives that tell stories."
+    }
+  ]
 }
